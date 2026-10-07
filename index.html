@@ -187,7 +187,11 @@ nav .cartlink { color: #fff; font-weight: 700; padding: 7px 14px; border-radius:
 .qr img, .qr canvas { width: 140px !important; height: 140px !important; }
 .pay dl { margin: 0; display: grid; gap: 8px; min-width: 0; }
 .pay dt { font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
-.pay dd { margin: 0; font-weight: 700; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+.pay dd { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 0; font-weight: 700; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+.cpy { font: inherit; font-size: .78rem; font-weight: 700; color: var(--copper-hi); background: transparent; border: 1px solid rgba(201,133,73,.5); border-radius: 99px; padding: 3px 10px; cursor: pointer; }
+.cpy.done { color: var(--ok); border-color: var(--ok); }
+.hint-mob { display: none; }
+@media (max-width: 860px), (pointer: coarse) { .hint-desk { display: none; } .hint-mob { display: inline; } #p-qr { display: none !important; } .paygrid { grid-template-columns: 1fr; } }
 .paybtns { display: flex; gap: 10px; flex-wrap: wrap; }
 .small2 { font-size: .88rem; }
 .linkbtn { background: none; border: 0; color: var(--muted); text-decoration: underline; font: inherit; cursor: pointer; justify-self: start; padding: 0; }
@@ -508,17 +512,17 @@ footer a { color: var(--soft); }
           </form>
           <div id="pay" class="pay" hidden>
             <h3>Bestelling <span id="p-ref"></span></h3>
-            <p>Maak het bedrag over en stuur je bestelling naar mij via WhatsApp. Ik begin zodra de betaling binnen is en je kaarten er zijn.</p>
+            <p>Open je bank-app en maak het bedrag over met de gegevens hieronder. Stuur daarna je bestelling naar mij via WhatsApp. Ik begin zodra de betaling binnen is en je kaarten er zijn.</p>
             <div class="paygrid">
               <div id="p-qr" class="qr" aria-label="QR-code om te betalen"></div>
               <dl>
-                <div><dt>Bedrag</dt><dd id="p-amount"></dd></div>
-                <div><dt>IBAN</dt><dd id="p-iban"></dd></div>
-                <div><dt>Ten name van</dt><dd id="p-holder"></dd></div>
-                <div><dt>Omschrijving</dt><dd id="p-desc"></dd></div>
+                <div><dt>Bedrag</dt><dd><span id="p-amount"></span><button type="button" class="cpy" data-src="p-amount">Kopieer</button></dd></div>
+                <div><dt>IBAN</dt><dd><span id="p-iban"></span><button type="button" class="cpy" data-src="p-iban">Kopieer</button></dd></div>
+                <div><dt>Ten name van</dt><dd><span id="p-holder"></span></dd></div>
+                <div><dt>Omschrijving</dt><dd><span id="p-desc"></span><button type="button" class="cpy" data-src="p-desc">Kopieer</button></dd></div>
               </dl>
             </div>
-            <p class="muted small2">Scan de QR-code met je bank-app, of neem de gegevens over.</p>
+            <p class="muted small2"><span class="hint-desk">Scan de QR-code met je bank-app, of kopieer de gegevens.</span><span class="hint-mob">Tik op Kopieer en plak de gegevens in je bank-app.</span></p>
             <div class="paybtns">
               <a class="btn solid" id="p-wa" href="#" target="_blank" rel="noopener">Bestelling sturen via WhatsApp</a>
               <button type="button" class="btn line" id="p-copy">Kopieer bestelling</button>
@@ -761,6 +765,14 @@ const SERVICES = [
     try { navigator.clipboard.writeText(lastText).then(done, () => fallback()); } catch (e) { fallback(); }
     function fallback() { const t = document.createElement('textarea'); t.value = lastText; document.body.appendChild(t); t.select(); try { document.execCommand('copy'); done(); } catch (e) {} t.remove(); }
   });
+  document.querySelectorAll('.cpy').forEach(btn => btn.addEventListener('click', () => {
+    let v = $(btn.dataset.src).textContent;
+    if (btn.dataset.src === 'p-iban') v = v.replace(/\s/g, '');
+    if (btn.dataset.src === 'p-amount') v = v.replace('€', '').trim();
+    const ok = () => { btn.textContent = 'Gekopieerd'; btn.classList.add('done'); setTimeout(() => { btn.textContent = 'Kopieer'; btn.classList.remove('done'); }, 2000); };
+    const fb = () => { const t = document.createElement('textarea'); t.value = v; document.body.appendChild(t); t.select(); try { document.execCommand('copy'); ok(); } catch (e) {} t.remove(); };
+    try { navigator.clipboard.writeText(v).then(ok, fb); } catch (e) { fb(); }
+  }));
   $('p-back').addEventListener('click', () => {
     $('pay').hidden = true; $('checkout').hidden = false; $('p-copied').hidden = true; $('p-qr').hidden = false; $('p-wa').hidden = false;
   });
