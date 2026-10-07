@@ -508,11 +508,12 @@ footer a { color: var(--soft); }
               <label class="agree"><input type="checkbox" class="c-ok" id="c-ok8" data-t="beeldmateriaal"><span>Foto's en video's van mijn kaarten mogen zonder mijn naam gebruikt worden voor documentatie en promotie.</span></label>
             </fieldset>
             <p class="err" id="co-err" hidden></p>
-            <button type="submit" class="btn solid wide" id="co-btn">Bestelling plaatsen</button>
+            <button type="submit" class="btn solid wide" id="co-btn">Bestelling plaatsen via WhatsApp</button>
+            <p class="muted small2">WhatsApp opent met je bestelling erin. Druk daar op versturen, dan heb ik hem.</p>
           </form>
           <div id="pay" class="pay" hidden>
             <h3>Bestelling <span id="p-ref"></span></h3>
-            <p>Open je bank-app en maak het bedrag over met de gegevens hieronder. Stuur daarna je bestelling naar mij via WhatsApp. Ik begin zodra de betaling binnen is en je kaarten er zijn.</p>
+            <p>Check of je je bestelling in WhatsApp hebt verstuurd. Maak daarna het bedrag over met de gegevens hieronder. Ik begin zodra de betaling binnen is en je kaarten er zijn.</p>
             <div class="paygrid">
               <div id="p-qr" class="qr" aria-label="QR-code om te betalen"></div>
               <dl>
@@ -524,7 +525,7 @@ footer a { color: var(--soft); }
             </div>
             <p class="muted small2"><span class="hint-desk">Scan de QR-code met je bank-app, of kopieer de gegevens.</span><span class="hint-mob">Tik op Kopieer en plak de gegevens in je bank-app.</span></p>
             <div class="paybtns">
-              <a class="btn solid" id="p-wa" href="#" target="_blank" rel="noopener">Bestelling sturen via WhatsApp</a>
+              <a class="btn solid" id="p-wa" href="#" target="_blank" rel="noopener">WhatsApp niet geopend? Stuur opnieuw</a>
               <button type="button" class="btn line" id="p-pdf">Orderbevestiging (PDF)</button>
               <button type="button" class="btn line" id="p-copy">Kopieer bestelling</button>
             </div>
@@ -545,7 +546,7 @@ footer a { color: var(--soft); }
       </div>
       <ol class="steps">
         <li><b>Bestellen</b><p>Zet je kaarten in het mandje, kies per kaart de behandeling en vink de afspraken aan.</p></li>
-        <li><b>Betalen</b><p>Maak het bedrag over en stuur je bestelling via WhatsApp.</p></li>
+        <li><b>Versturen & betalen</b><p>Je bestelling gaat via WhatsApp naar mij. Daarna maak je het bedrag over.</p></li>
         <li><b>Brengen of sturen</b><p>Langsbrengen in Leeuwarden heeft de voorkeur. Opsturen kan ook, op eigen risico; stuur verzekerd met track & trace.</p></li>
         <li><b>Behandeling</b><p>Foto's bij binnenkomst, daarna werk ik de kaart zorgvuldig af volgens de afgesproken behandeling.</p></li>
         <li><b>Oplevering</b><p>Foto's bij oplevering. Je haalt de kaart op of krijgt hem verzekerd retour.</p></li>
@@ -762,7 +763,7 @@ const SERVICES = [
       new QRCode(qr, { text: epc, width: 140, height: 140, correctLevel: QRCode.CorrectLevel.M });
     } else { qr.hidden = true; }
     const wa = $('p-wa');
-    if (SHOP.whatsapp) wa.href = 'https://wa.me/' + SHOP.whatsapp + '?text=' + encodeURIComponent(lastText);
+    if (SHOP.whatsapp) { wa.href = 'https://wa.me/' + SHOP.whatsapp + '?text=' + encodeURIComponent(lastText); try { window.open(wa.href, '_blank', 'noopener'); } catch (e) {} }
     else wa.hidden = true;
 
     $('checkout').hidden = true; $('pay').hidden = false;
